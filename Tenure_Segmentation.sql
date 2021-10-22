@@ -4,7 +4,7 @@ with c2_2021 as (
 	where enrolled_flag = 1
 	and traffic_source = 'referral'
 	and campaign_id = 'referral_raf'
-	and enrollment_date >= '2021-09-01'
+	and enrollment_date >= '2021-08-01'
 	and enrollment_date < current_date
 )
 
@@ -13,8 +13,8 @@ with c2_2021 as (
 	from segment.chime_prod.screens S
 	join "ANALYTICS"."LOOKER"."MEMBER_ACQUISITION_FACTS" M on M.user_id = S.user_id::varchar and M.enrolled_flag = 1
 	join "ANALYTICS"."LOOKER"."USERS_VIEW" U on U.id::varchar = S.user_id::varchar and U.status = 'active'
-	where S.timestamp >= '2021-09-01'              -- dateadd(month, -6,current_date)
-	and S.timestamp < '2021-10-01'
+	where S.timestamp >= '2021-08-01'              -- dateadd(month, -6,current_date)
+	and S.timestamp < '2021-09-01'
 	and enrollment_date <= dateadd(day, -45,current_date)
 	and name = 'Home'
 	group by 1,2
@@ -25,7 +25,7 @@ with c2_2021 as (
 	select distinct user_id, id, timestamp
 	from "SEGMENT"."CHIME_PROD"."CTA_BUTTON_TAPPED" T
 	where unique_id in ('invite_friends_invite_button_next_to_contact', 'invite_friends', 'invite_friends_action_panel_ok_button')
-	and T.timestamp >= '2021-09-01'
+	and T.timestamp >= '2021-08-01'
 	and T.timestamp < current_date
 )
 
@@ -35,7 +35,7 @@ with c2_2021 as (
 -- select *
 -- from "ANALYTICS"."LOOKER"."MEMBER_ACQUISITION_FACTS"
 -- where enrolled_flag = 1
--- and enrollment_date >= '2021-09-01'
+-- and enrollment_date >= '2021-08-01'
 -- and enrollment_date < current_date
 -- )
 
@@ -55,7 +55,7 @@ and transaction_timestamp < current_date
 
 
 select case when dd1.user_id is null then 0 else 1 end as C1_30DD,
-	   case when datediff(month, c1.enrollment_date, c1.first_login) > 1 then 0 else 1 end as new_member,
+	   case when datediff(day, c1.enrollment_date, c1.first_login) > 30 then 0 else 1 end as new_member,
 		count(distinct c1.user_id) as Users,
 		count(distinct t.user_id) as invited,
 		count(distinct c2.referred_by) as referred,
